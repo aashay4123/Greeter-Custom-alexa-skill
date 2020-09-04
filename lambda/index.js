@@ -150,8 +150,7 @@ exports.handler = Alexa.SkillBuilders.custom()
         FallbackIntentHandler,
         SessionEndedRequestHandler,
         IntentReflectorHandler)
-         .lambda()
     .addErrorHandlers(
         ErrorHandler)
-    .withCustomUserAgent('sample/hello-world/v1.2');
+    .withCustomUserAgent('sample/hello-world/v1.2')    .lambda();
    
