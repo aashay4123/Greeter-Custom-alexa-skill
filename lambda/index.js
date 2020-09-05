@@ -45,7 +45,14 @@ const HelloIntentHandler = {
   handle(handlerInput) {
     const name =
       handlerInput.requestEnvelope.request.intent.slots.FirstName.value;
-    const speakOutput = "hello " + name + ". " + getWish();
+    let speakOutput = "";
+    if (handlerInput.session) {
+      speakOutput = "hey ";
+      if (handlerInput.session.attributes) {
+        speakOutput = "okay ";
+      }
+    }
+    speakOutput += "hello " + name + ". " + getWish();
 
     return (
       handlerInput.responseBuilder
