@@ -25,7 +25,9 @@ const HelloIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'HelloIntent';
     },
     handle(handlerInput) {
-        const speakOutput = 'Hello World!';
+        console.log(handlerInput)
+        const name = "aashay"
+        const speakOutput  = "hello " + name + ". ";
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
