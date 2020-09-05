@@ -18,7 +18,20 @@ const LaunchRequestHandler = {
             .getResponse();
     }
 };
-
+const getWish = () => {
+  const mydate = new Date();
+  let hours = mydate.getUTCHours();
+  if (hours < 0) {
+    hours = hours + 24;
+  }
+  if (hours < 12) {
+    return "Good morning!";
+  } else if (hours < 18) {
+    return "Good Afternoon!";
+  } else {
+    return "Good evening!";
+  }
+};
 const HelloIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
@@ -26,7 +39,7 @@ const HelloIntentHandler = {
     },
     handle(handlerInput) {
         const name = handlerInput.requestEnvelope.request.intent.slots.FirstName.value;
-        const speakOutput  = "hello " + name + ". " ;
+        const speakOutput  = "hello " + name + ". " + getWish();
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
