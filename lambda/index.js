@@ -29,7 +29,7 @@ const HelloIntentHandler = {
         const speakOutput  = "hello " + name + ". ";
 
         return handlerInput.responseBuilder
-            .speak(handlerInput)
+            .speak(handlerInput.request.intent.slots.FirstName.value)
             //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
             .getResponse();
     }
