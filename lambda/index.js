@@ -10,8 +10,8 @@ const LaunchRequestHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
     handle(handlerInput) {
-        const speakOutput = "Welcome to Greet skill. Using our skill you can greet your guests. Whom you want to greet?",
-        const repromptText= " You can say for example, say hello to john.",
+        const speakOutput = "Welcome to Greet skill. Using our skill you can greet your guests. Whom you want to greet?";
+        const repromptText= " You can say for example, say hello to john.";
         return handlerInput.responseBuilder
             .speak(speakOutput)
             .reprompt(repromptText)
@@ -54,11 +54,12 @@ const HelpIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
     },
     handle(handlerInput) {
-        const speakOutput = 'You can say hello to me! How can I help?';
+        const speakOutput = 'You can say wish amy! How else can I help?';
+        const repromptText = "How else can I help?";
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
-            .reprompt(speakOutput)
+            .reprompt(repromptText)
             .getResponse();
     }
 };
