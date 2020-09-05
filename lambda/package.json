@@ -1,5 +1,5 @@
 {
-  "name": "Greeter",
+  "name": "greeter",
   "version": "1.2.0",
   "description": "alexa building skil for Greeting guest ",
   "main": "index.js",
