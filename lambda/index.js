@@ -10,12 +10,11 @@ const LaunchRequestHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
     handle(handlerInput) {
-        const speakOutput = 'Welcome, you can say Hello or Help. Which would you like to try?';
-        const speechText = "Welcome to Greet skill. Using our skill you can greet your guests. Whom you want to greet?",
+        const speakOutput = "Welcome to Greet skill. Using our skill you can greet your guests. Whom you want to greet?",
         const repromptText= " You can say for example, say hello to john.",
         return handlerInput.responseBuilder
             .speak(speakOutput)
-            .reprompt(speakOutput)
+            .reprompt(repromptText)
             .getResponse();
     }
 };
