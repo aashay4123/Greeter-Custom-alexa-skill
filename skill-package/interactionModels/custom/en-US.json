@@ -1,0 +1,135 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "greeter",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "HelloWorldIntent",
+          "slots": [],
+          "samples": [
+            "hello",
+            "how are you",
+            "say hi world",
+            "say hi",
+            "hi",
+            "say hello world",
+            "say hello"
+          ]
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
+          "name": "HelloIntent",
+          "slots": [
+            {
+              "name": "FirstName",
+              "type": "GUEST_NAMES"
+            }
+          ],
+          "samples": [
+            "wish  {FirstName}",
+            "greet our guest {FirstName}",
+            "wish our guest {FirstName}",
+            "say hello to {FirstName}"
+          ]
+        },
+        {
+          "name": "AMAZON.MoreIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateSettingsIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NextIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PageUpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PageDownIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PreviousIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollRightIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollDownIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollLeftIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ScrollUpIntent",
+          "samples": []
+        }
+      ],
+      "types": [
+        {
+          "values": [
+            {
+              "name": {
+                "value": "phoebe"
+              }
+            },
+            {
+              "name": {
+                "value": "penny"
+              }
+            },
+            {
+              "name": {
+                "value": "rachel"
+              }
+            },
+            {
+              "name": {
+                "value": "amy"
+              }
+            },
+            {
+              "name": {
+                "value": "john"
+              }
+            }
+          ],
+          "name": "GUEST_NAMES"
+        }
+      ],
+      "modelConfiguration": {
+        "fallbackIntentSensitivity": {
+          "level": "LOW"
+        }
+      }
+    }
+  },
+  "version": "5"
+}
