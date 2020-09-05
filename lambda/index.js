@@ -26,7 +26,7 @@ const HelloIntentHandler = {
     },
     handle(handlerInput) {
         const name = "aashay";
-        const val = handlerInput.requestEnvelope.intent.slots.FirstName.value;
+        const val = handlerInput.requestEnvelope.request.intent.slots.FirstName.value;
         const speakOutput  = "hello " + name + ". " +val ;
 
         return handlerInput.responseBuilder
