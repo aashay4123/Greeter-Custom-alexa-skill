@@ -25,12 +25,11 @@ const HelloIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'HelloIntent';
     },
     handle(handlerInput) {
-        console.log(handlerInput)
         const name = "aashay";
         const speakOutput  = "hello " + name + ". ";
 
         return handlerInput.responseBuilder
-            .speak(speakOutput)
+            .speak(handlerInput)
             //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
             .getResponse();
     }
