@@ -1,11 +1,5 @@
-/* *
- * This sample demonstrates handling intents from an Alexa skill using the Alexa Skills Kit SDK (v2).
- * Please visit https://alexa.design/cookbook for additional examples on implementing slots, dialog management,
- * session persistence, api calls, and more.
- * */
 const Alexa = require("ask-sdk-core");
-// const axios = require("axios");
-var http = require("http");
+var axios = require("axios");
 
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
@@ -14,8 +8,10 @@ const LaunchRequestHandler = {
     );
   },
   handle(handlerInput) {
-    const speakOutput =
-      "Welcome to Greeter skill. Using this skill you can greet your guests. Whom you want to greet?";
+    const speakOutput = "Welcome to Greeter skill. Whom you want to greet?";
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    attributes.lastResult = speakOutput;
+    handlerInput.attributesManager.getSessionAttributes(attributes);
     const repromptText = " You can say for example, say hello to john.";
     return handlerInput.responseBuilder
       .speak(speakOutput)
@@ -23,6 +19,7 @@ const LaunchRequestHandler = {
       .getResponse();
   },
 };
+
 const getWish = () => {
   const mydate = new Date();
   let hours = mydate.getUTCHours();
@@ -37,29 +34,23 @@ const getWish = () => {
     return "Good evening! ";
   }
 };
+
 const getQuote = () => {
   const url =
     "http://api.forismatic.com/api/1.0/json?method=getQuote&lang=en&format=json";
   return new Promise((resolve, reject) => {
-    var req = http.get(url, function (res) {
-      var body = "";
-
-      res.on("data", function (chunk) {
-        body += chunk;
+    axios
+      .get(url)
+      .then((res) => res.data)
+      .then((res) => {
+        resolve(res.quoteText);
+      })
+      .catch((err) => {
+        reject("", err);
       });
-
-      res.on("end", function () {
-        body = body.replace(/\\/g, "");
-        var quote = JSON.parse(body);
-        resolve(quote.quoteText);
-      });
-    });
-
-    req.on("error", function (err) {
-      reject("", err);
-    });
   });
 };
+
 const HelloIntentHandler = {
   canHandle(handlerInput) {
     return (
@@ -71,18 +62,24 @@ const HelloIntentHandler = {
     const name =
       handlerInput.requestEnvelope.request.intent.slots.FirstName.value;
     const quote = await getQuote();
-    let speakOutput = "hello " + name + ". " + getWish() + quote;
-    return (
-      handlerInput.responseBuilder
-        .speak(speakOutput)
-        .withStandardCard(
-          "quote",
-          quote,
-          "https://upload.wikimedia.org/wikipedia/commons/5/5b/Hello_smile.png"
-        )
-        //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
-        .getResponse()
-    );
+    let speakOutput = "hello " + name + ". " + getWish();
+    speakOutput +=
+      " quote for the day. " + quote + " Do you want to hear one more?";
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    attributes.lastResult = speakOutput;
+    attributes.quoteIntent = true;
+    handlerInput.attributesManager.getSessionAttributes(attributes);
+    return handlerInput.responseBuilder
+      .speak(speakOutput)
+      .withStandardCard(
+        "quote",
+        quote,
+        "https://upload.wikimedia.org/wikipedia/commons/5/5b/Hello_smile.png"
+      )
+      .reprompt(
+        "add a reprompt if you want to keep the session open for the user to respond"
+      )
+      .getResponse();
   },
 };
 
@@ -90,27 +87,21 @@ const QuoteIntentHandler = {
   canHandle(handlerInput) {
     return (
       Alexa.getRequestType(handlerInput.requestEnvelope) === "IntentRequest" &&
-      Alexa.getIntentName(handlerInput.requestEnvelope) === "HelloIntent"
+      Alexa.getIntentName(handlerInput.requestEnvelope) === "QuoteIntent"
     );
   },
-  handle(handlerInput) {
-    const name =
-      handlerInput.requestEnvelope.request.intent.slots.FirstName.value;
-    let speakOutput = "";
-    if (handlerInput.session) {
-      speakOutput = "hey ";
-      if (handlerInput.session.attributes) {
-        speakOutput = "okay ";
-      }
-    }
-    speakOutput += "hello " + name + ". " + getWish();
+  async handle(handlerInput) {
+    const quote = await getQuote();
+    let speakOutput = "here. " + quote + "do you want to hear more?";
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    attributes.quoteIntent = true;
+    attributes.lastResult = speakOutput;
+    handlerInput.attributesManager.getSessionAttributes(attributes);
 
-    return (
-      handlerInput.responseBuilder
-        .speak(speakOutput)
-        //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
-        .getResponse()
-    );
+    return handlerInput.responseBuilder
+      .speak(speakOutput)
+      .reprompt("You can say yes or one more. ")
+      .getResponse();
   },
 };
 
@@ -118,27 +109,24 @@ const NextQuoteIntentHandler = {
   canHandle(handlerInput) {
     return (
       Alexa.getRequestType(handlerInput.requestEnvelope) === "IntentRequest" &&
-      Alexa.getIntentName(handlerInput.requestEnvelope) === "HelloIntent"
+      Alexa.getIntentName(handlerInput.requestEnvelope) === "NextQuoteIntent"
     );
   },
-  handle(handlerInput) {
-    const name =
-      handlerInput.requestEnvelope.request.intent.slots.FirstName.value;
+  async handle(handlerInput) {
     let speakOutput = "";
-    if (handlerInput.session) {
-      speakOutput = "hey ";
-      if (handlerInput.session.attributes) {
-        speakOutput = "okay ";
-      }
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    if (attributes.quoteIntent) {
+      const quote = await getQuote();
+      speakOutput += quote + " do you want to hear more?";
+      attributes.lastResult = speakOutput;
+      handlerInput.attributesManager.getSessionAttributes(attributes);
+    } else {
+      speakOutput += "please try again.";
     }
-    speakOutput += "hello " + name + ". " + getWish();
-
-    return (
-      handlerInput.responseBuilder
-        .speak(speakOutput)
-        //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
-        .getResponse()
-    );
+    return handlerInput.responseBuilder
+      .speak(speakOutput)
+      .reprompt("You can say yes or one more. ")
+      .getResponse();
   },
 };
 
@@ -160,6 +148,28 @@ const HelpIntentHandler = {
   },
 };
 
+const RepeatIntentHandler = {
+  canHandle(handlerInput) {
+    return (
+      Alexa.getRequestType(handlerInput.requestEnvelope) === "IntentRequest" &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) ===
+        "AMAZON.RepeatIntent"
+    );
+  },
+  handle(handlerInput) {
+    let speakOutput = "repeat!";
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    if (attributes.lastResult) {
+      speakOutput = "I said: " + attributes.lastResult;
+    }
+    handlerInput.attributesManager.getSessionAttributes(attributes);
+    return handlerInput.responseBuilder
+      .speak(speakOutput)
+      .reprompt(speakOutput)
+      .getResponse();
+  },
+};
+
 const CancelAndStopIntentHandler = {
   canHandle(handlerInput) {
     return (
@@ -176,6 +186,7 @@ const CancelAndStopIntentHandler = {
     return handlerInput.responseBuilder.speak(speakOutput).getResponse();
   },
 };
+
 /* *
  * FallbackIntent triggers when a customer says something that doesn’t map to any intents in your skill
  * It must also be defined in the language model (if the locale supports it)
@@ -218,34 +229,7 @@ const SessionEndedRequestHandler = {
     return handlerInput.responseBuilder.getResponse(); // notice we send an empty response
   },
 };
-/* *
- * The intent reflector is used for interaction model testing and debugging.
- * It will simply repeat the intent the user said. You can create custom handlers for your intents
- * by defining them above, then also adding them to the request handler chain below
- * */
-// const IntentReflectorHandler = {
-//   canHandle(handlerInput) {
-//     return (
-//       Alexa.getRequestType(handlerInput.requestEnvelope) === "IntentRequest"
-//     );
-//   },
-//   handle(handlerInput) {
-//     const intentName = Alexa.getIntentName(handlerInput.requestEnvelope);
-//     const speakOutput = `You just triggered ${intentName}`;
 
-//     return (
-//       handlerInput.responseBuilder
-//         .speak(speakOutput)
-//         //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
-//         .getResponse()
-//     );
-//   },
-// };
-/**
- * Generic error handling to capture any syntax or routing errors. If you receive an error
- * stating the request handler chain is not found, you have not implemented a handler for
- * the intent being invoked or included it in the skill builder below
- * */
 const ErrorHandler = {
   canHandle() {
     return true;
@@ -276,7 +260,8 @@ exports.handler = Alexa.SkillBuilders.custom()
     FallbackIntentHandler,
     SessionEndedRequestHandler,
     QuoteIntentHandler,
-    NextQuoteIntentHandler
+    NextQuoteIntentHandler,
+    RepeatIntentHandler
   )
   .addErrorHandlers(ErrorHandler)
   .withCustomUserAgent("sample/hello-world/v1.2")

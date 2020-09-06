@@ -104,7 +104,19 @@
         {
           "name": "NextQuoteIntent",
           "slots": [],
-          "samples": ["why not", "sure", "okay", "one more", "yes"]
+          "samples": [
+            "please",
+            "yes please",
+            "more",
+            "okay ",
+            "yes",
+            "why not",
+            "one more"
+          ]
+        },
+        {
+          "name": "AMAZON.RepeatIntent",
+          "samples": []
         }
       ],
       "types": [
